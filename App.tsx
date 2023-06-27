@@ -1,11 +1,13 @@
-// Importando as dependências necessárias
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import data from './data.json';
-
-// Definindo as telas da aplicação
+import TEAM from './Teams.json';
+import play from './playerTag.json';
+import pData from './playerdata.json';
+// Tela Inicial
 
 function HomeScreen({ navigation }: any) {
 
@@ -25,26 +27,34 @@ function HomeScreen({ navigation }: any) {
     </View>
   );
 }
-
-function SecondScreen() {
+// Tela Teams
+function SecondScreen({ navigation }: any) {
+  // uso de dados do data.json
   const [teamsData, setTeamsData] = useState<any[]>([]);
-
   useEffect(() => {
     setTeamsData(data);
   }, []);
+  // progresso duvidas
+  const handleImagePress = (username: any) => {
+    navigation.navigate('   ', { username });
+
+  };
 
   return (
     <View style={styles.TeamsContainer}>
       <Text style={styles.TeamsText}>Teams</Text>
+
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         {teamsData.map((team, index) => (
 
           <View key={index}>
             <Text style={styles.teamsText}>{team.nome}</Text>
-            <Image
-              source={{ uri: team.link }}
-              style={styles.TeamsImage}
-            />
+            <TouchableOpacity onPress={() => handleImagePress(team.abreviacao)}>
+              <Image
+                source={{ uri: team.link }}
+                style={styles.TeamsImage}
+              />
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
@@ -52,7 +62,81 @@ function SecondScreen() {
   );
 }
 
-// Criando o navegador e as pilhas de navegação
+// Tela Lineup
+const LineScreen = ({ navigation, route }: { route: any, navigation: any }) => {
+
+  const { username } = route.params;
+  const [teamsData, setTeamsData] = useState<any[]>([]);
+  const [teamData, setTeamData] = useState<any[]>([]);
+  const [logoData, setLogoData] = useState<any[]>([]);
+  useEffect(() => {
+    setTeamsData(play);
+    setTeamData(TEAM);
+    setLogoData(data);
+  }, []);
+  const logo = logoData.filter(logoData => logoData.abreviacao === username);
+  const player = teamData.filter(teamData => teamData.abbreviation === username);
+  const filtro = teamsData.filter(teamsData => teamsData.teamId === player[0].teamId);
+  const link = logo[0]?.link;
+  const handleImagePress = (username: any) => {
+    navigation.navigate('    ',`https://cdn.nba.com/headshots/nba/latest/260x190/${username}.png`);
+
+  };
+
+  return (
+    <View style={styles.lineupContainer}>
+<Image
+                source={{ uri: link }}
+                style={styles.TeamsImage}
+              />
+      <Text style={styles.playerText}>Player</Text>
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {filtro.map((team, index) => (
+
+          <View style={styles.line} key={index}>
+            <TouchableOpacity style={styles.lineupSpace} onPress={() => handleImagePress(team.playerId)}>
+              <Text style={styles.lineupText}>{team.first_name} {team.last_name}</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+
+
+}
+// Tela do Jogador
+const PlayerScreen = ({ navigation, route }: { route: any, navigation: any }) => {
+  const link = route.params;
+  const [playerData, setPlayerData] = useState<any[]>([]);
+  useEffect(() => {
+    setPlayerData(pData);
+  }, []);
+  const player = playerData.filter(playerData => playerData.link === link);
+
+  return (
+    <View style={styles.lineupContainer}>
+       <Image
+                source={{ uri: link }}
+                style={styles.TeamsImage}
+              />
+      
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {player.map((team, index) => (
+          <View style={styles.lineupContainer} key={index}>
+            <Text style={styles.lineupText}>{team.first_name} {team.last_name}</Text>
+            <Text>Altura:{team.height} m </Text>
+            <Text>Peso :{team.weight} kg</Text>
+
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+  
+}
+
+
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -61,6 +145,8 @@ function App() {
       <Stack.Navigator>
         <Stack.Screen name=" " component={HomeScreen} />
         <Stack.Screen name="  " component={SecondScreen} />
+        <Stack.Screen name="   " component={LineScreen} />
+        <Stack.Screen name="    " component={PlayerScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -135,6 +221,39 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     alignItems: 'center',
     paddingVertical: 20,
+    paddingHorizontal: 5,
+  },
+  lineupText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'rgb(27,147,227)',
+    textAlign: 'center',
+    width: 350,
+  },
+  playerText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'black',
+    textAlign: 'right',
+  },
+  lineupContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  lineupSpace: {
+    backgroundColor: 'white',
+    padding: 1,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 1,
+  },
+  line: {
+
+    backgroundColor: 'gray',
+    marginHorizontal: 5,
   },
 });
 
