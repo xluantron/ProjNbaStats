@@ -1,12 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import data from './data.json';
-import TEAM from './Teams.json';
-import play from './playerTag.json';
-import pData from './playerdata.json';
+import datac from './data_player_complete.json';
 // Tela Inicial
 
 function HomeScreen({ navigation }: any) {
@@ -66,74 +63,108 @@ function SecondScreen({ navigation }: any) {
 const LineScreen = ({ navigation, route }: { route: any, navigation: any }) => {
 
   const { username } = route.params;
-  const [teamsData, setTeamsData] = useState<any[]>([]);
   const [teamData, setTeamData] = useState<any[]>([]);
   const [logoData, setLogoData] = useState<any[]>([]);
   useEffect(() => {
-    setTeamsData(play);
-    setTeamData(TEAM);
+    setTeamData(datac);
     setLogoData(data);
   }, []);
   const logo = logoData.filter(logoData => logoData.abreviacao === username);
-  const player = teamData.filter(teamData => teamData.abbreviation === username);
-  const filtro = teamsData.filter(teamsData => teamsData.teamId === player[0].teamId);
+  const primeiro = teamData.filter(teamData => teamData.sigla === username.toLowerCase());
+  const player = primeiro.filter(primeiro => primeiro.number_tag !== 'null');
   const link = logo[0]?.link;
   const handleImagePress = (username: any) => {
-    navigation.navigate('    ',`https://cdn.nba.com/headshots/nba/latest/260x190/${username}.png`);
-
+    navigation.navigate('    ', username);
   };
 
   return (
     <View style={styles.lineupContainer}>
-<Image
-                source={{ uri: link }}
-                style={styles.TeamsImage}
-              />
+      <Image
+        source={{ uri: link }}
+        style={styles.TeamsImage}
+      />
       <Text style={styles.playerText}>Player</Text>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {filtro.map((team, index) => (
+        {player.map((team, index) => (
 
           <View style={styles.line} key={index}>
-            <TouchableOpacity style={styles.lineupSpace} onPress={() => handleImagePress(team.playerId)}>
-              <Text style={styles.lineupText}>{team.first_name} {team.last_name}</Text>
+
+            <TouchableOpacity style={styles.lineupSpace} onPress={() => handleImagePress(team.ID)}>
+
+              <Text style={styles.lineupText}>{team.first_name} {team.last_name} {team.number_tag}</Text>
+              <Text style={styles.lineupText}>{team.pos}</Text>
+              <Image
+                source={{ uri: `https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${team.ID}.png&w=350&h=254` }}
+                style={styles.playerImage}
+              />
+
             </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
     </View>
   );
+  /*
 
-
+*/
 }
 // Tela do Jogador
 const PlayerScreen = ({ navigation, route }: { route: any, navigation: any }) => {
   const link = route.params;
   const [playerData, setPlayerData] = useState<any[]>([]);
   useEffect(() => {
-    setPlayerData(pData);
+    setPlayerData(datac);
   }, []);
-  const player = playerData.filter(playerData => playerData.link === link);
+  const player = playerData.filter(playerData => playerData.ID === link);
+  const url = `https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${link}.png&w=350&h=254`;
+
 
   return (
     <View style={styles.lineupContainer}>
-       <Image
-                source={{ uri: link }}
-                style={styles.TeamsImage}
-              />
-      
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+      <Image
+        source={{ uri: url }}
+        style={styles.TeamsImage}
+      />
+
+  
         {player.map((team, index) => (
           <View style={styles.lineupContainer} key={index}>
-            <Text style={styles.lineupText}>{team.first_name} {team.last_name}</Text>
-            <Text>Altura:{team.height} m </Text>
-            <Text>Peso :{team.weight} kg</Text>
+            <Text style={styles.lineupText}>{team.first_name} {team.last_name}{team.number_tag}</Text>
+            <Text style={styles.lineupText}>{team.pos}</Text>
 
+            <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+              <View style={styles.statContainer} key={index}>
+                <Text style={styles.statText}>Altura/Peso: {team.altura_peso}</Text>
+                <Text style={styles.statText}>Idade: {team.bday}</Text>
+                <Text style={styles.statText}>Jogos: {team.J}</Text>
+                <Text style={styles.statText}>Minutos/jogo: {team.MIN} min</Text>
+                <Text style={styles.statText}>Arremesso:{team.FG}%</Text>
+                <Text style={styles.statText}>Três pontos: {team.triP}%</Text>
+                <Text style={styles.statText}>Lance Livre: {team.FT}%</Text>
+                <Text style={styles.statText}>Rebotes/jogo: {team.REB}</Text>
+                <Text style={styles.statText}>Assistencia/jogo: {team.AST}</Text>
+                <Text style={styles.statText}>Bloqueio/jogo: {team.BLK}</Text>
+                <Text style={styles.statText}>Três pontos: {team.triP}%</Text>
+                <Text style={styles.statText}>Lance Livre: {team.FT}%</Text>
+                <Text style={styles.statText}>Rebotes/jogo: {team.REB}</Text>
+                <Text style={styles.statText}>Assistencia/jogo: {team.AST}</Text>
+                <Text style={styles.statText}>Bloqueio/jogo: {team.BLK}</Text>
+
+              </View>
+            </ScrollView>
           </View>
+
         ))}
-      </ScrollView>
+      
     </View>
   );
+  /*
+              <Text>Altura:{team.height} m </Text>
+              <Text>Peso :{team.weight} kg</Text>
   
+  */
+
+
 }
 
 
@@ -236,13 +267,35 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'right',
   },
+  statText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'black',
+    textAlign: 'right',
+
+  },
+  statContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'baseline',
+    backgroundColor: 'rgb(177,177,188)',
+  },
+  playerImage: {
+    width: 100,
+    height: 75,
+    resizeMode: 'contain',
+    position: 'relative',
+
+  },
   lineupContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
   },
+
   lineupSpace: {
+
     backgroundColor: 'white',
     padding: 1,
     borderRadius: 10,
@@ -255,6 +308,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     marginHorizontal: 5,
   },
+
 });
 
 export default App;
