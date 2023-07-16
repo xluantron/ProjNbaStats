@@ -12,9 +12,9 @@ function HomeScreen({ navigation }: any) {
     <View style={styles.container}>
       <Image
         source={require('./Imgs/nba-logo-3.png')} // URL da imagem remota
-        style={styles.HomeImage}
+        style={styles.homeImage}
       />
-      <Text style={styles.HomeStats}>STATS</Text>
+      <Text style={styles.homeStats}>STATS</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('Quadra')}
@@ -44,18 +44,18 @@ function SecondScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.TeamsContainer}>
-      <Text style={styles.TeamsText}>Teams</Text>
+    <View style={styles.teamsContainer}>
+      <Text style={styles.teamsText}>Teams</Text>
 
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         {teamsData.map((team, index) => (
 
           <View key={index}>
-            <Text style={styles.teamsText}>{team.nome}</Text>
+            <Text style={styles.teamsText1}>{team.nome}</Text>
             <TouchableOpacity onPress={() => handleImagePress(team.abreviacao)}>
               <Image
                 source={{ uri: team.link }}
-                style={styles.TeamsImage}
+                style={styles.teamsImage}
               />
             </TouchableOpacity>
           </View>
@@ -87,7 +87,7 @@ const LineScreen = ({ navigation, route }: { route: any, navigation: any }) => {
     <View style={styles.lineupContainer}>
       <Image
         source={{ uri: link }}
-        style={styles.TeamsImage}
+        style={styles.teamsImage}
       />
       <Text style={styles.playerText}>Player</Text>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -129,7 +129,7 @@ const PlayerScreen = ({ route }: { route: any }) => {
     <View style={styles.lineupContainer}>
       <Image
         source={{ uri: url }}
-        style={styles.TeamsImage}
+        style={styles.teamsImage}
       />
 
 
@@ -168,21 +168,47 @@ const PlayerScreen = ({ route }: { route: any }) => {
 }
 
 const MakeScreen = () => {
-
-  const [selectedValue, setSelectedValue] = useState<number | null>(null);
+  const [painelVisible, setPainelVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalLine, setModalLine] = useState(false);
   const [teamsData, setTeamsData] = useState<any[]>([]);
   const [teamData, setTeamData] = useState<any[]>([]);
+  const [playerData, setPlayerData] = useState<any[]>([]);
+  const [estatData, setEstatData] = useState<any[]>([]);
+  const [vets, setvets] = useState(0);
+  const [pImg, setpImg] = useState('Empty');
+  const [pImg1, setpImg1] = useState('Empty');
+  const [pImg2, setpImg2] = useState('Empty');
+  const [pImg3, setpImg3] = useState('Empty');
+  const [pImg4, setpImg4] = useState('Empty');
+  const [d1, setD1] = useState(0);
+  const [d2, setD2] = useState(0);
+  const [d3, setD3] = useState(0);
+  const [d4, setD4] = useState(0);
+  const [d5, setD5] = useState(0);
+
   useEffect(() => {
     setTeamsData(data);
-    setTeamData(datac);
+    // Filtrando jogadores reservas e jogadores que não tem dados de jogos na temporada
+    setTeamData(datac.filter(datac => datac.number_tag !== 'null' && datac.J !== 'null'));
+    setpImg('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD1(0);
+    setpImg1('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD2(0);
+    setpImg2('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD3(0);
+    setpImg3('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD4(0);
+    setpImg4('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD5(0);
+
   }, []);
-  const player = teamData.filter(teamData => teamData.number_tag !== 'null');
-  const options = teamsData;
-  console.log(options.length);
-  const openModal = () => {
+  const resetAll = () => {
+    setpImg('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD1(0);
+    setpImg1('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD2(0);
+    setpImg2('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD3(0);
+    setpImg3('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD4(0);
+    setpImg4('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD5(0);
+  };
+  const openModal = (value: number) => {
+    setModalLine(false);
     setModalVisible(true);
+    setvets(value);
   };
 
   const closeModal = () => {
@@ -191,13 +217,85 @@ const MakeScreen = () => {
   const closeteamModal = () => {
     setModalLine(false);
   };
+  const openPainel = () => {
+    setPainelVisible(true);
+    const dados = teamData.filter(teamData =>
+      teamData.ID === d1
+      || teamData.ID === d2
+      || teamData.ID === d3
+      || teamData.ID === d4
+      || teamData.ID === d5);
+    let soma = 0;
+    if (dados.length) {
+      for (let i = 0; i < dados.length; i++) {
+        soma += parseFloat(dados[i].FG);
+        console.log(dados[i].FG);
+      };
+      console.log(soma / dados.length);
+    };
+  };
+  const closePainel = () => {
+    setPainelVisible(false);
+  };
   const selectValue = (value: String) => {
-    setTeamData(player.filter(player => player.sigla === value.toLowerCase()));
+    const operacao = teamData.filter(teamData => teamData.sigla === value.toLowerCase()
+      && (teamData.ID !== d1
+        && teamData.ID !== d2
+        && teamData.ID !== d3
+        && teamData.ID !== d4
+        && teamData.ID !== d5));
+
+    if (vets === 1) {
+      setPlayerData(operacao.filter(operacao => operacao.pos === 'Armador'
+        || operacao.pos === 'Ala-pivô'
+        || operacao.pos === 'Atacante'));
+    }
+    if (vets === 2) {
+      setPlayerData(operacao.filter(operacao => operacao.pos === 'Pivô'
+        || operacao.pos === 'Ala-pivô'
+        || operacao.pos === 'Atacante'));
+    }
+    if (vets === 3) {
+      setPlayerData(operacao.filter(operacao => operacao.pos === 'Armador'
+        || operacao.pos === 'Ala-pivô'
+        || operacao.pos === 'Atacante'));
+    }
+    if (vets === 4) {
+      setPlayerData(operacao.filter(operacao => operacao.pos === 'Armador'
+        || operacao.pos === 'Ala'
+        || operacao.pos === 'Guarda'));
+    }
+    if (vets === 5) {
+      setPlayerData(operacao.filter(operacao => operacao.pos === 'Armador'
+        || operacao.pos === 'Ala'
+        || operacao.pos === 'Guarda'));
+    }
     closeModal();
     setModalLine(true);
   };
   const selectPlayer = (value: number) => {
-    setSelectedValue(value);
+    if (vets === 1) {
+      setpImg(`https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${value}.png&w=350&h=254`)
+      setD1(value);
+    }
+    if (vets === 2) {
+      setpImg1(`https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${value}.png&w=350&h=254`)
+      setD2(value);
+    }
+    if (vets === 3) {
+      setpImg2(`https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${value}.png&w=350&h=254`)
+      setD3(value);
+    }
+    if (vets === 4) {
+      setpImg3(`https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${value}.png&w=350&h=254`)
+      setD4(value);
+    }
+    if (vets === 5) {
+      setpImg4(`https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${value}.png&w=350&h=254`)
+      setD5(value);
+    }
+
+    setvets(0);
     closeteamModal();
   };
 
@@ -210,56 +308,116 @@ const MakeScreen = () => {
       >
 
 
-        <TouchableOpacity style={styles.center1Circle} onPress={openModal}>
-          <Text style={styles.centerText}>{selectedValue || '+'}</Text>
+        <TouchableOpacity style={styles.center1Circle} onPress={() => openModal(1)}>
+          <Image
+            source={{ uri: pImg }}
+            style={styles.playerImage}
+          />
         </TouchableOpacity>
 
-        <Modal visible={modalVisible} animationType="slide" onRequestClose={closeModal}>
-          <View style={styles.modalContainer}>
-            <FlatList
-              data={options}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => selectValue(item.abreviacao)}
-                >
-                  <Image
-                    source={{ uri: item.link }}
-                    style={styles.playerImage}
-                  />
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item) => item.toString()}
-            />
-          </View>
-        </Modal>
-        <Modal visible={modalLine} animationType="slide" onRequestClose={closeteamModal}>
-          <View style={styles.modalContainer}>
-            <FlatList
-              data={teamData}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => selectPlayer(item.ID)}
-                >
-                  <Image
-                    source={{ uri: `https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${item.ID}.png&w=350&h=254` }}
-                    style={styles.playerImage}
-                  />
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item) => item.toString()}
-            />
-          </View>
-        </Modal>
+        <TouchableOpacity style={styles.center2Circle} onPress={() => openModal(2)}>
+          <Image
+            source={{ uri: pImg1 }}
+            style={styles.playerImage}
+          />
+        </TouchableOpacity>
 
+        <TouchableOpacity style={styles.center3Circle} onPress={() => openModal(3)}>
+          <Image
+            source={{ uri: pImg2 }}
+            style={styles.playerImage}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.center4Circle} onPress={() => openModal(4)}>
+          <Image
+            source={{ uri: pImg3 }}
+            style={styles.playerImage}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.center5Circle} onPress={() => openModal(5)}>
+          <Image
+            source={{ uri: pImg4 }}
+            style={styles.playerImage}
+          />
+        </TouchableOpacity>
+        <View style={styles.containerMenu}>
+          <TouchableOpacity style={styles.statButton} onPress={() => openPainel()}>
+            <Text>Estatisticas</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.statButton} onPress={() => resetAll()}>
+            <Text>Reset</Text>
+          </TouchableOpacity>
+        </View>
+        <Modal visible={modalVisible} animationType='fade' onRequestClose={closeModal}>
+          <View style={styles.modalContainer}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => closeModal()}
+            >
+              <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+            <ScrollView >
+              {teamsData.map((team, index) => (
+
+                <View key={index}>
+                  <Text style={styles.teamsText1}>{team.nome}</Text>
+                  <TouchableOpacity onPress={() => selectValue(team.abreviacao)}>
+                    <Image
+                      source={{ uri: team.link }}
+                      style={styles.teamsImage}
+                    />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </Modal>
+        <Modal visible={modalLine} animationType="fade" onRequestClose={closeteamModal}>
+          <View style={styles.modalContainer}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => openModal(vets)}
+            >
+              <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+            <ScrollView >
+              {playerData.map((item, index) => (
+
+                <View key={index}>
+                  <Text style={styles.statText}>{item.first_name} {item.last_name}</Text>
+                  <TouchableOpacity onPress={() => selectPlayer(item.ID)}>
+                    <Image
+                      source={{ uri: `https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/${item.ID}.png&w=350&h=254` }}
+                      style={styles.playerModalImage}
+                    />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </Modal>
+        <Modal visible={painelVisible} animationType="fade" onRequestClose={closePainel}>
+          <View>
+            <TouchableOpacity
+              style={styles.estBButton}
+              onPress={() => closePainel()}
+            >
+              <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+            <Text>Aqui criar</Text>
+          </View>
+        </Modal>
       </ImageBackground>
     </View>
   );
 
 
 }
+/*
 
+*/
 
 const Stack = createNativeStackNavigator();
 
@@ -286,6 +444,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(227,231,242)',
 
   },
+  containerMenu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   title: {
     fontSize: 24,
     marginBottom: 20,
@@ -300,6 +463,43 @@ const styles = StyleSheet.create({
     position: 'relative',
     bottom: 0,
     margin: 5,
+
+  },
+  backButton: {
+    width: 100,
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: 'gray',
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: 100,
+    margin: 5,
+
+  },
+  estBButton: {
+    width: 100,
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: 'gray',
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: 225,
+    margin: 5,
+
+  },
+  statButton: {
+    width: 100,
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: 'gray',
+
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    left: 0,
+    margin: 40,
 
   },
   makerButton: {
@@ -318,7 +518,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-  HomeStats: {
+  homeStats: {
     position: 'relative',
     bottom: 100,
     fontSize: 50,
@@ -327,7 +527,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  HomeImage: {
+  homeImage: {
     position: 'relative',
     bottom: 100,
     width: 200,
@@ -340,27 +540,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 375,
   },
-  TeamsContainer: {
+  teamsContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgb(0,107,182)',
   },
-  TeamsImage: {
+  teamsImage: {
     width: 200,
     height: 100,
     resizeMode: 'contain',
   },
-  TeamsText: {
+  quadraImage: {
+    width: 200,
+    height: 100,
+    resizeMode: 'contain',
+  },
+  teamsText: {
     fontSize: 50,
     marginBottom: 20,
     fontWeight: 'bold',
     color: 'white',
   },
-  teamsText: {
+  teamsText1: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'gray',
     textAlign: 'center',
   },
   scrollViewContainer: {
@@ -395,11 +600,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(177,177,188)',
   },
   playerImage: {
+    width: 75,
+    height: 75,
+    borderRadius: 50,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    position: 'relative',
+  },
+  playerModalImage: {
     width: 100,
     height: 75,
     resizeMode: 'contain',
     position: 'relative',
-
+    left: 70,
   },
   lineupContainer: {
     flex: 1,
@@ -431,14 +646,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     position: 'relative',
+    left: 230,
+    bottom: -200,
+
+  },
+  center2Circle: {
+    width: 75,
+    height: 75,
+    borderRadius: 50,
+    backgroundColor: 'lightblue',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    position: 'relative',
     left: 150,
-    top: -50,
+
   },
-  centerText: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: 'white',
+  center3Circle: {
+    width: 75,
+    height: 75,
+    borderRadius: 50,
+    backgroundColor: 'lightblue',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    position: 'relative',
+    left: 75,
+
   },
+  center4Circle: {
+    width: 75,
+    height: 75,
+    borderRadius: 50,
+    backgroundColor: 'lightblue',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    position: 'relative',
+    left: 225,
+    bottom: -50
+  },
+  center5Circle: {
+    width: 75,
+    height: 75,
+    borderRadius: 50,
+    backgroundColor: 'lightblue',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    position: 'relative',
+    left: 75,
+
+  },
+
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
