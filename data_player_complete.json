@@ -13131,5 +13131,28 @@
     "PTS": "null",
     "sigla": "sas",
     "ID": "5104157"
+  },
+  {
+    "first_name": "Geral",
+    "last_name": "Estatistic",
+    "team_name": "Stat",
+    "number_tag": "stat",
+    "pos": "stat",
+    "altura_peso": "stat",
+    "bday": "stat",
+    "J": "0",
+    "MIN": "0",
+    "FG": "0",
+    "triP": "0",
+    "FT": "0",
+    "REB": "0",
+    "AST": "0",
+    "BLK": "0",
+    "STL": "0",
+    "PF": "0",
+    "TO": "0",
+    "PTS": "stat",
+    "sigla": "stat",
+    "ID": "stat"
   }
 ]

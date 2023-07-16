@@ -19,7 +19,7 @@ function HomeScreen({ navigation }: any) {
         style={styles.button}
         onPress={() => navigation.navigate('Quadra')}
       >
-        <Text style={styles.buttonText}>Make</Text>
+        <Text style={styles.buttonText}>Quadra</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
@@ -51,7 +51,7 @@ function SecondScreen({ navigation }: any) {
         {teamsData.map((team, index) => (
 
           <View key={index}>
-            <Text style={styles.teamsText1}>{team.nome}</Text>
+            <Text style={styles.teamsText2}>{team.nome}</Text>
             <TouchableOpacity onPress={() => handleImagePress(team.abreviacao)}>
               <Image
                 source={{ uri: team.link }}
@@ -167,7 +167,7 @@ const PlayerScreen = ({ route }: { route: any }) => {
 
 }
 
-const MakeScreen = () => {
+const QuadraScreen = () => {
   const [painelVisible, setPainelVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalLine, setModalLine] = useState(false);
@@ -204,6 +204,7 @@ const MakeScreen = () => {
     setpImg2('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD3(0);
     setpImg3('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD4(0);
     setpImg4('https://png.pngtree.com/element_our/sm/20180516/sm_5afbe35fd36cc.jpg'); setD5(0);
+
   };
   const openModal = (value: number) => {
     setModalLine(false);
@@ -219,20 +220,63 @@ const MakeScreen = () => {
   };
   const openPainel = () => {
     setPainelVisible(true);
+    const estat = teamData.filter(teamData => teamData.ID === 'stat');
     const dados = teamData.filter(teamData =>
       teamData.ID === d1
       || teamData.ID === d2
       || teamData.ID === d3
       || teamData.ID === d4
       || teamData.ID === d5);
-    let soma = 0;
-    if (dados.length) {
+    let dFG = 0;
+    let dtriP = 0;
+    let dFT = 0;
+    let dREB = 0;
+    let dAST = 0;
+    let dBLK = 0;
+    let dSTL = 0;
+    let dPF = 0;
+    let dTO = 0;
+    let dPTS = 0;
+
+    if (dados.length>0) {
       for (let i = 0; i < dados.length; i++) {
-        soma += parseFloat(dados[i].FG);
-        console.log(dados[i].FG);
+        dFG += parseFloat(dados[i].FG);
+        dtriP += parseFloat(dados[i].triP);
+        dFT += parseFloat(dados[i].FT);
+        dREB += parseFloat(dados[i].REB);
+        dAST += parseFloat(dados[i].AST);
+        dBLK += parseFloat(dados[i].BLK);
+        dSTL += parseFloat(dados[i].STL);
+        dPF += parseFloat(dados[i].PF);
+        dTO += parseFloat(dados[i].TO);
+        dPTS += parseFloat(dados[i].PTS);
       };
-      console.log(soma / dados.length);
+
+      estat[0].FG = (dFG / dados.length).toFixed(2);
+      estat[0].triP = (dtriP / dados.length).toFixed(2);
+      estat[0].FT = (dFT / dados.length).toFixed(2);
+      estat[0].REB = (dREB / dados.length).toFixed(2);
+      estat[0].AST = (dAST / dados.length).toFixed(2);
+      estat[0].BLK = (dBLK / dados.length).toFixed(2);
+      estat[0].STL = (dSTL / dados.length).toFixed(2);
+      estat[0].PF = (dPF / dados.length).toFixed(2);
+      estat[0].TO = (dTO / dados.length).toFixed(2);
+      estat[0].PTS = (dPTS / dados.length).toFixed(2);
+      setEstatData(estat);
+    }else{
+      estat[0].FG = dFG;
+      estat[0].triP = dtriP;
+      estat[0].FT = dFT;
+      estat[0].REB = dREB;
+      estat[0].AST = dAST;
+      estat[0].BLK = dBLK;
+      estat[0].STL = dSTL;
+      estat[0].PF = dPF;
+      estat[0].TO = dTO;
+      estat[0].PTS = dPTS;
+      setEstatData(estat);
     };
+
   };
   const closePainel = () => {
     setPainelVisible(false);
@@ -406,8 +450,68 @@ const MakeScreen = () => {
             >
               <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
-            <Text>Aqui criar</Text>
+
           </View>
+          {estatData.map((item, index) => (
+            <React.Fragment key={index}>
+              <View style={styles.containerStat} >
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Acertos</Text>
+                  <Text>{item.FG}%</Text>
+                </View>
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>3 pontos</Text>
+                  <Text>{item.triP}%</Text>
+                </View>
+              </View>
+
+              <View style={styles.containerStat} >
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Lances Livres</Text>
+                  <Text>{item.FT}%</Text>
+                </View>
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Media Rebotes</Text>
+                  <Text>{item.REB}</Text>
+                </View>
+              </View>
+
+              <View style={styles.containerStat} >
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Media Assitencia</Text>
+                  <Text>{item.AST}</Text>
+                </View>
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Media de bloqueios</Text>
+                  <Text>{item.BLK}</Text>
+                </View>
+              </View>
+
+              <View style={styles.containerStat} >
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Media de roubos</Text>
+                  <Text>{item.STL}</Text>
+                </View>
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Media de Faltas</Text>
+                  <Text>{item.PF}</Text>
+                </View>
+              </View>
+
+              <View style={styles.containerStat} >
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Media de Erros</Text>
+                  <Text>{item.TO}</Text>
+                </View>
+                <View style={styles.containerCell}>
+                  <Text style={styles.itemName}>Media de Pontos</Text>
+                  <Text >{item.PTS}</Text>
+                </View>
+              </View>
+
+            </React.Fragment>
+          ))}
+
         </Modal>
       </ImageBackground>
     </View>
@@ -429,7 +533,7 @@ function App() {
         <Stack.Screen name="Teams" component={SecondScreen} />
         <Stack.Screen name="Lineup" component={LineScreen} />
         <Stack.Screen name="Player" component={PlayerScreen} />
-        <Stack.Screen name="Quadra" component={MakeScreen} />
+        <Stack.Screen name="Quadra" component={QuadraScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -444,10 +548,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(227,231,242)',
 
   },
+  containerCell: {
+    width: 150,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgb(227,231,242)',
+    borderRadius: 20,
+  },
   containerMenu: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  containerStat: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: 'gray',
+    margin: 0,
   },
   title: {
     fontSize: 24,
@@ -566,6 +686,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'gray',
+    textAlign: 'center',
+  },
+  teamsText2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
     textAlign: 'center',
   },
   scrollViewContainer: {
@@ -717,6 +843,13 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     color: 'black',
+  },
+  itemName: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  itemValue: {
+    fontSize: 14,
   },
 });
 
